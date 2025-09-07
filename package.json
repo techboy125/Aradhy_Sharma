@@ -11,13 +11,13 @@
     "three": "^0.180.0"
   },
   "scripts": {
-  "start": "react-scripts start",
-  "build": "PUBLIC_URL=https://techboy125.github.io/Aradhy_Sharma/ react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject",
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d build"
-},
+    "start": "react-scripts start",
+    "build": "PUBLIC_URL=https://techboy125.github.io/Aradhy_Sharma/ react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -37,6 +37,7 @@
     ]
   },
   "devDependencies": {
+    "cross-env": "^10.0.0",
     "gh-pages": "^6.3.0"
   }
 }
