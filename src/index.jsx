@@ -358,7 +358,7 @@ const App = () => {
             <div className="space-y-6">
               <div>
                 <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Head of Avionics</h4>
-                <p className="text-gray-600 dark:text-gray-400 mb-2">YAN Aeromodeling Club</p>
+                <p className="text-gray-600 dark:text-gray-400 mb-2">Ayam</p>
                 <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
                   <li>Oversaw the selection and calibration of avionics systems for drone projects.</li>
                 </ul>
@@ -381,7 +381,7 @@ const App = () => {
                 <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Achievements</h4>
                 <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
                   <li>Secured 3rd place in the Best Design Report category at the Autonomous Drone Design Competition (SAE INDIA).</li>
-                  <li>Secured 3rd place in Soldworks Design Competition Conducted by Effi-cycle.</li>
+                  <li>Awarded the gold medal for securing 1st position in the Class 10th Mathematics Olympiad.</li>
                   <li>Earned 2nd position in Dwand-Robowar, a technical robotics competition.</li>
                 </ul>
               </div>
