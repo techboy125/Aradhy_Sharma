@@ -2,7 +2,7 @@
   "name": "aradhya-portfolio",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/techboy125/Aradhy_Sharma",
+  "homepage": "https://github.com/techboy125/Aradhy_Sharma/src/index.jsx",
   "dependencies": {
     "cra-template-basic-react": "1.0.1",
     "react": "^19.1.1",
