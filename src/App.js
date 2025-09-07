@@ -13,96 +13,131 @@ const App = () => {
   });
   const projectCardsRef = useRef([]);
 
-  // Ref for the Three.js canvas
+  // Refs for the Three.js canvas and scene objects
   const canvasRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
+  const nodesRef = useRef([]);
+  const linesRef = useRef(null);
 
   // Effect for the Three.js background animation
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    let scene, camera, renderer, frameId;
-    let nodes = [];
-    const connections = [];
-    const mouse = new THREE.Vector2();
+    let frameId;
+    const maxLines = 1000;
+    const positions = new Float32Array(maxLines * 2 * 3);
+    const colors = new Float32Array(maxLines * 2 * 3);
+    const lineDistance = 50;
+    
+    // Create the node material
+    const nodeMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.8 });
+    // Create the line material
+    const lineMaterial = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.5
+    });
 
     const init = () => {
       // Scene setup
-      scene = new THREE.Scene();
+      const scene = new THREE.Scene();
+      sceneRef.current = scene;
 
       // Camera setup
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       camera.position.z = 100;
+      cameraRef.current = camera;
 
       // Renderer setup
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
-
-      // Create the nodes (atoms) with neon green color
+      rendererRef.current = renderer;
+      
+      // Create the nodes (atoms)
       const nodeGeometry = new THREE.SphereGeometry(0.8, 8, 8);
-      const nodeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.8 });
       const numNodes = 60;
       for (let i = 0; i < numNodes; i++) {
         const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
         node.position.x = (Math.random() - 0.5) * 200;
         node.position.y = (Math.random() - 0.5) * 200;
         node.position.z = (Math.random() - 0.5) * 200;
-        nodes.push(node);
+        nodesRef.current.push(node);
         scene.add(node);
       }
 
+      // Create a single geometry for all lines
+      const lineGeometry = new THREE.BufferGeometry();
+      lineGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+      lineGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3).setUsage(THREE.DynamicDrawUsage));
+
+      linesRef.current = new THREE.LineSegments(lineGeometry, lineMaterial);
+      scene.add(linesRef.current);
+
       window.addEventListener('resize', onWindowResize);
-      window.addEventListener('mousemove', onMouseMove);
 
       animate();
     };
 
     const onWindowResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-
-    const onMouseMove = (event) => {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
     };
 
     const animate = () => {
       frameId = requestAnimationFrame(animate);
 
-      nodes.forEach(node => {
+      // Animate the nodes
+      nodesRef.current.forEach(node => {
         node.position.x += Math.sin(Date.now() * 0.0001 + node.position.y * 0.1) * 0.02;
         node.position.y += Math.cos(Date.now() * 0.0001 + node.position.x * 0.1) * 0.02;
         node.position.z += Math.sin(Date.now() * 0.0001 + node.position.z * 0.1) * 0.02;
       });
 
-      connections.forEach(line => scene.remove(line));
-      connections.length = 0;
+      // Update the lines
+      let lineCount = 0;
+      for (let i = 0; i < nodesRef.current.length; i++) {
+        for (let j = i + 1; j < nodesRef.current.length; j++) {
+          const dist = nodesRef.current[i].position.distanceTo(nodesRef.current[j].position);
+          if (dist < lineDistance) {
+            const opacity = 1 - (dist / lineDistance);
+            const r = opacity;
+            const g = opacity;
+            const b = opacity;
 
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dist = nodes[i].position.distanceTo(nodes[j].position);
-          if (dist < 50) {
-            const points = [nodes[i].position, nodes[j].position];
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const connectionMaterial = new THREE.LineBasicMaterial({
-              color: 0x00ffff,
-              transparent: true,
-              opacity: 1 - (dist / 50)
-            });
-            const line = new THREE.Line(geometry, connectionMaterial);
-            connections.push(line);
-            scene.add(line);
+            positions[lineCount * 6] = nodesRef.current[i].position.x;
+            positions[lineCount * 6 + 1] = nodesRef.current[i].position.y;
+            positions[lineCount * 6 + 2] = nodesRef.current[i].position.z;
+            positions[lineCount * 6 + 3] = nodesRef.current[j].position.x;
+            positions[lineCount * 6 + 4] = nodesRef.current[j].position.y;
+            positions[lineCount * 6 + 5] = nodesRef.current[j].position.z;
+
+            colors[lineCount * 6] = r;
+            colors[lineCount * 6 + 1] = g;
+            colors[lineCount * 6 + 2] = b;
+            colors[lineCount * 6 + 3] = r;
+            colors[lineCount * 6 + 4] = g;
+            colors[lineCount * 6 + 5] = b;
+
+            lineCount++;
           }
         }
       }
 
-      camera.position.x += (mouse.x * 10 - camera.position.x) * 0.05;
-      camera.position.y += (-mouse.y * 10 - camera.position.y) * 0.05;
-      camera.lookAt(scene.position);
+      linesRef.current.geometry.setDrawRange(0, lineCount * 2);
+      linesRef.current.geometry.attributes.position.needsUpdate = true;
+      linesRef.current.geometry.attributes.color.needsUpdate = true;
+      
+      // Automated camera movement
+      const time = Date.now() * 0.001;
+      cameraRef.current.position.x = Math.sin(time * 0.1) * 120;
+      cameraRef.current.position.y = Math.cos(time * 0.15) * 80;
+      cameraRef.current.lookAt(sceneRef.current.position);
 
-      renderer.render(scene, camera);
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
     };
 
     init();
@@ -111,10 +146,29 @@ const App = () => {
     return () => {
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', onWindowResize);
-      window.removeEventListener('mousemove', onMouseMove);
-      renderer.dispose();
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+      }
     };
   }, []);
+
+  // New effect to handle theme changes for the 3D animation
+  useEffect(() => {
+    // Only update colors if the scene objects exist
+    if (nodesRef.current.length > 0 && linesRef.current) {
+      const nodeColor = isDarkMode ? new THREE.Color(0x00ff00) : new THREE.Color(0x0000ff);
+      const lineColor = isDarkMode ? 0.5 : 0.2;
+      
+      nodesRef.current.forEach(node => {
+        if (node.material && node.material.color) {
+          node.material.color.set(nodeColor);
+        }
+      });
+      if (linesRef.current.material) {
+        linesRef.current.material.opacity = lineColor;
+      }
+    }
+  }, [isDarkMode]);
 
   // Effect for project card visibility on scroll
   useEffect(() => {
@@ -136,6 +190,16 @@ const App = () => {
       });
     };
   }, []);
+  
+  // New effect to handle body class for Tailwind dark mode
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
 
   const toggleTheme = () => {
     const newIsDarkMode = !isDarkMode;
@@ -145,7 +209,7 @@ const App = () => {
   };
 
   return (
-    <div className={`antialiased leading-relaxed ${isDarkMode ? 'dark' : 'light'}`}>
+    <div className={`antialiased leading-relaxed`}>
       <style>
         {`
           /* Keyframe animations for dynamic effects */
@@ -163,10 +227,18 @@ const App = () => {
           /* Base styles for the entire page */
           body {
               font-family: 'Inter', sans-serif;
-              background: #111827;
-              color: #f3f4f6;
               transition: background-color 0.3s ease, color 0.3s ease;
               overflow-x: hidden;
+          }
+          
+          body.dark {
+            background: #111827;
+            color: #f3f4f6;
+          }
+
+          body.light {
+            background: #f3f4f6;
+            color: #111827;
           }
 
           /* 3D canvas styles to cover the entire background */
@@ -273,9 +345,9 @@ const App = () => {
             <div className="mt-6">
               <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Education:</h4>
               <ul className="mt-2 text-gray-600 dark:text-gray-400">
-                <li><strong>Biomedical Engineering</strong> - SGSITS, Indore (CGPA: 7.17)</li>
-                <li><strong>High School (Class 12)</strong> - CBSE (74.8%)</li>
-                <li><strong>High School (Class 10)</strong> - CBSE (78.2%)</li>
+                <li><strong>Biomedical Engineering</strong> - SGSITS, Indore</li>
+                <li><strong>High School (Class 12)</strong> - CBSE</li>
+                <li><strong>High School (Class 10)</strong> - CBSE</li>
               </ul>
             </div>
           </section>
@@ -286,7 +358,7 @@ const App = () => {
             <div className="space-y-6">
               <div>
                 <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Head of Avionics</h4>
-                <p className="text-gray-600 dark:text-gray-400 mb-2">Ayam</p>
+                <p className="text-gray-600 dark:text-gray-400 mb-2">YAN Aeromodeling Club</p>
                 <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
                   <li>Oversaw the selection and calibration of avionics systems for drone projects.</li>
                 </ul>
@@ -309,7 +381,7 @@ const App = () => {
                 <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Achievements</h4>
                 <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
                   <li>Secured 3rd place in the Best Design Report category at the Autonomous Drone Design Competition (SAE INDIA).</li>
-                  <li>Awarded the gold medal for securing 1st position in the Class 10th Mathematics Olympiad.</li>
+                  <li>Secured 3rd place in Soldworks Design Competition Conducted by Effi-cycle.</li>
                   <li>Earned 2nd position in Dwand-Robowar, a technical robotics competition.</li>
                 </ul>
               </div>
