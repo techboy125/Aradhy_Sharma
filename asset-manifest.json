@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/techboy125/Aradhy_Sharma/static/css/main.f855e6bc.css",
-    "main.js": "/techboy125/Aradhy_Sharma/static/js/main.64e1c815.js",
-    "static/js/453.b48355bc.chunk.js": "/techboy125/Aradhy_Sharma/static/js/453.b48355bc.chunk.js",
-    "index.html": "/techboy125/Aradhy_Sharma/index.html",
-    "main.f855e6bc.css.map": "/techboy125/Aradhy_Sharma/static/css/main.f855e6bc.css.map",
-    "main.64e1c815.js.map": "/techboy125/Aradhy_Sharma/static/js/main.64e1c815.js.map",
-    "453.b48355bc.chunk.js.map": "/techboy125/Aradhy_Sharma/static/js/453.b48355bc.chunk.js.map"
+    "main.css": "/Aradhy_Sharma/static/css/main.f855e6bc.css",
+    "main.js": "/Aradhy_Sharma/static/js/main.a0b159fd.js",
+    "static/js/453.b48355bc.chunk.js": "/Aradhy_Sharma/static/js/453.b48355bc.chunk.js",
+    "index.html": "/Aradhy_Sharma/index.html",
+    "main.f855e6bc.css.map": "/Aradhy_Sharma/static/css/main.f855e6bc.css.map",
+    "main.a0b159fd.js.map": "/Aradhy_Sharma/static/js/main.a0b159fd.js.map",
+    "453.b48355bc.chunk.js.map": "/Aradhy_Sharma/static/js/453.b48355bc.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f855e6bc.css",
-    "static/js/main.64e1c815.js"
+    "static/js/main.a0b159fd.js"
   ]
 }
