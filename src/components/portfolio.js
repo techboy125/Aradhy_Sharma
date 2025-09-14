@@ -525,7 +525,7 @@ const Portfolio = () => {
           <section id="hero" className="text-center py-12">
             <div className="flex flex-col items-center">
               <h2 className="text-4xl sm:text-5xl font-extrabold text-indigo-800 dark:text-indigo-200 leading-tight mt-6">
-                Bridging Biomedical Engineering with IoT and Embedded Systems
+                Bridging Engineering with IoT and Embedded Systems
               </h2>
               <p className="mt-4 max-w-xl mx-auto text-lg text-gray-600 dark:text-gray-400">
                 A passionate Biomedical Engineer with hands-on experience in prototyping innovative devices, from fNIRS headbands to autonomous robots. I am committed to leveraging technology to create tangible, real-world impact.
